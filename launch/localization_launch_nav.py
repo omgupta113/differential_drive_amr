@@ -76,7 +76,7 @@ def generate_launch_description():
     declare_map_yaml_cmd = DeclareLaunchArgument(
         'map',
         description='Full path to map yaml file to load',
-        default_value=os.path.join(bringup_dir, 'config', 'dblock1.yaml'))
+        default_value=os.path.join(bringup_dir, 'config', 'hostel.yaml'))
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',

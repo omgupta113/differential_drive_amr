@@ -11,11 +11,11 @@
     base_link_frame: base_footprint
     world_frame: odom    
 
-    odom0: /odom/unfiltered
-    odom0_config: [false, false, false,
+    odom0: /diff_cont/odom
+    odom0_config: [false, false,false,
                   false, false, false,
-                  true, false, false,
-                  false, false, false,
+                  true, true,false,
+                  false, false, true,
                   false, false, false]
     odom0_queue_size: 10
     odom0_differential: false

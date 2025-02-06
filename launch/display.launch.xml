@@ -1,7 +1,10 @@
+<?xml version="1.0"?>
 <launch>
     <!-- Define paths -->
     <let name="urdf_path" value="$(find-pkg-share diffdrive_description)/urdf/my_robot.urdf.xacro"/>
     <let name="rviz_path" value="$(find-pkg-share diffdrive_description)/rviz/robit.rviz"/>
+    <let name="robot" value="$(command 'xacro $(var urdf_path)')"/>
+    <let name="controller_params_path" value="$(find-pkg-share diffdrive_description)/config/my_controllers.yaml"/>
 
     <!-- Robot State Publisher with use_sim_time set to false -->
     <node pkg="robot_state_publisher" exec="robot_state_publisher">
@@ -10,16 +13,34 @@
     </node>
 
     <!-- Joint State Publisher GUI with use_sim_time set to false -->
-    <node pkg="joint_state_publisher_gui" exec="joint_state_publisher_gui">
+    <node pkg="joint_state_publisher" exec="joint_state_publisher">
         <param name="use_sim_time" value="false"/>
     </node>
+
+    <!-- Controller Manager Node -->
+    
+    <node pkg="controller_manager" exec="ros2_control_node" name="controller_manager" >
+        <!-- <param name="robot_description" value="$(command 'xacro $(var urdf_path)')"/> -->
+        <param from="$(var controller_params_path)"/>
+        <!-- Add a 3-second delay before starting -->
+        <!-- <param name="start_delay" value="3.0"/> -->
+    </node>
+    
+    
+
+    <!-- Differential Drive Controller Spawner -->
+    <!-- Differential Drive Controller Spawner -->
+    <ros_timer period="10.0">
+    <node pkg="controller_manager" exec="spawner" name="diff_drive_spawner" args="diff_cont" />
+
+    <!-- Joint State Broadcaster Spawner -->
+    <node pkg="controller_manager" exec="spawner" name="joint_broad_spawner" args="joint_broad" />
+    </ros_timer>
 
     <!-- Include EKF Localization Node -->
     <include file="$(find-pkg-share diffdrive_description)/launch/ekf.launch.py"/>
 
-    <!-- RViz2 with use_sim_time set to false -->
-    <!--node pkg="rviz2" exec="rviz2" output="screen" args="-d $(var rviz_path)">
-        <param name="use_sim_time" value="false"/>
-    </node-->
-</launch>
+    <!-- YDLidar ROS2 Driver Node -->
+    <include file="$(find-pkg-share ydlidar_ros2_driver)/launch/ydlidar_launch.py"/>
 
+</launch>
